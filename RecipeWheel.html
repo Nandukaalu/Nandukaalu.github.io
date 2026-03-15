@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>🍲 world recipe wheel · full dishes</title>
+
+    <style>
+
+        * {
+
+            box-sizing: border-box;
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+
+
+        body {
+
+            background: linear-gradient(145deg, #1e3f2a 0%, #14301e 100%);
+
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+
+            padding: 1.2rem;
+
+        }
+
+
+
+        .card {
+
+            max-width: 1100px;
+
+            width: 100%;
+
+            background: #fff7e6;
+
+            border-radius: 3rem 3rem 2.5rem 2.5rem;
+
+            box-shadow: 0 30px 50px #00000080, 0 0 0 4px #e4c28d inset;
+
+            padding: 2rem 2rem 2rem;
+
+        }
+
+
+
+        h1 {
+
+            font-size: 2.8rem;
+
+            font-weight: 800;
+
+            color: #1b4f1b;
+
+            text-shadow: 4px 4px 0 #f0c27b;
+
+            text-align: center;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 0.2rem;
+
+        }
+
+
+
+        .sub {
+
+            background: #dabb8b;
+
+            display: inline-block;
+
+            padding: 0.3rem 2.2rem;
+
+            border-radius: 40px;
+
+            font-size: 1.3rem;
+
+            font-weight: 600;
+
+            color: #232323;
+
+            margin: 0 auto 1.5rem;
+
+            border: 2px solid #a8844a;
+
+            text-align: center;
+
+            width: fit-content;
+
+        }
+
+
+
+        .flex-container {
+
+            display: flex;
+
+            flex-direction: row;
+
+            flex-wrap: wrap;
+
+            gap: 2rem;
+
+            justify-content: center;
+
+            align-items: center;
+
+        }
+
+
+
+        .wheel-box {
+
+            flex: 1 1 350px;
+
+            text-align: center;
+
+            position: relative;
+
+        }
+
+
+
+        .wheel-holder {
+
+            position: relative;
+
+            width: 300px;
+
+            height: 300px;
+
+            margin: 0 auto 1.2rem;
+
+        }
+
+
+
+        @media (min-width: 550px) {
+
+            .wheel-holder {
+
+                width: 340px;
+
+                height: 340px;
+
+            }
+
+        }
+
+
+
+        canvas {
+
+            width: 100% !important;
+
+            height: 100% !important;
+
+            display: block;
+
+            border-radius: 50%;
+
+            box-shadow: 0 15px 30px black, 0 0 0 7px #b18b54, 0 0 0 12px #624c2b;
+
+            cursor: pointer;
+
+            background: #ecdbba;
+
+            transition: transform 0.1s;
+
+        }
+
+
+
+        canvas:active {
+
+            transform: scale(0.97);
+
+        }
+
+
+
+        .pointer {
+
+            position: absolute;
+
+            top: -15px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            width: 0;
+
+            height: 0;
+
+            border-left: 22px solid transparent;
+
+            border-right: 22px solid transparent;
+
+            border-top: 45px solid #bd3838;
+
+            filter: drop-shadow(0 8px 6px #1f1f1f);
+
+            z-index: 10;
+
+        }
+
+
+
+        .pointer::after {
+
+            content: "";
+
+            position: absolute;
+
+            top: -48px;
+
+            left: -10px;
+
+            width: 20px;
+
+            height: 20px;
+
+            background: radial-gradient(circle, #ffdd88, #b87d2e);
+
+            border-radius: 50%;
+
+        }
+
+
+
+        .spin-btn {
+
+            background: #c94545;
+
+            border: none;
+
+            font-size: 2rem;
+
+            font-weight: bold;
+
+            color: white;
+
+            padding: 0.6rem 2rem;
+
+            border-radius: 60px;
+
+            box-shadow: 0 10px 0 #6d2020, 0 7px 18px black;
+
+            cursor: pointer;
+
+            transition: 0.06s linear;
+
+            margin: 10px 0 5px;
+
+            border: 2px solid #ffbc7a;
+
+            letter-spacing: 2px;
+
+        }
+
+
+
+        .spin-btn:active {
+
+            transform: translateY(7px);
+
+            box-shadow: 0 3px 0 #6d2020, 0 8px 16px black;
+
+        }
+
+
+
+        /* recipe panel */
+
+        .recipe-panel {
+
+            flex: 2 1 500px;
+
+            background: #2d2b1fd9;
+
+            backdrop-filter: blur(6px);
+
+            border-radius: 50px;
+
+            padding: 1.8rem 2rem;
+
+            border: 3px solid #e5bc7a;
+
+            color: #faf0d7;
+
+        }
+
+
+
+        .recipe-header {
+
+            font-size: 2.5rem;
+
+            font-weight: 800;
+
+            color: #ffddaa;
+
+            text-shadow: 3px 3px 0 #226622;
+
+            line-height: 1.2;
+
+            border-bottom: 3px dashed #c9a157;
+
+            padding-bottom: 0.4rem;
+
+            margin-bottom: 1rem;
+
+        }
+
+
+
+        .meta-badge {
+
+            display: flex;
+
+            gap: 0.8rem;
+
+            flex-wrap: wrap;
+
+            margin-bottom: 1.2rem;
+
+        }
+
+
+
+        .country-meta {
+
+            background: #b63b3b;
+
+            padding: 0.4rem 1.8rem;
+
+            border-radius: 40px;
+
+            font-weight: 600;
+
+            font-size: 1.2rem;
+
+            box-shadow: inset 0 -3px 0 #621b1b;
+
+        }
+
+
+
+        .meal-meta {
+
+            background: #2e7d32;
+
+            padding: 0.4rem 1.8rem;
+
+            border-radius: 40px;
+
+            font-weight: 600;
+
+            font-size: 1.2rem;
+
+            box-shadow: inset 0 -3px 0 #154615;
+
+        }
+
+
+
+        .ingredients-box {
+
+            background: #3e3522;
+
+            border-radius: 40px;
+
+            padding: 1.3rem 1.5rem;
+
+            font-size: 1.15rem;
+
+            border: 2px solid #b7924f;
+
+            margin: 1.5rem 0 1.2rem;
+
+            color: #ffeabf;
+
+        }
+
+
+
+        .instructions-box {
+
+            background: #4d412b;
+
+            border-radius: 30px;
+
+            padding: 1.2rem 1.5rem;
+
+            font-size: 1.05rem;
+
+            line-height: 1.5;
+
+            border: 2px solid #b38b47;
+
+            color: #fff2d1;
+
+            text-align: left;
+
+        }
+
+
+
+        .legend {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            justify-content: center;
+
+            gap: 1rem 2rem;
+
+            background: #b5955d;
+
+            padding: 0.7rem 2rem;
+
+            border-radius: 40px;
+
+            margin-top: 1.8rem;
+
+            font-weight: 700;
+
+            color: #242018;
+
+            border: 2px solid #7d623a;
+
+        }
+
+
+
+        .legend span {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+        }
+
+
+
+        .color-dot {
+
+            width: 18px;
+
+            height: 18px;
+
+            border-radius: 5px;
+
+            border: 2px solid #2f2b1d;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1>🍜 RECIPE ROULETTE</h1>
+
+    <div class="sub">japan 🍣  |  india 🍛  |  mexico 🌮  |  italy 🍝</div>
+
+
+
+    <div class="flex-container">
+
+        <!-- left side: wheel & spin -->
+
+        <div class="wheel-box">
+
+            <div class="wheel-holder">
+
+                <canvas id="wheelCanvas" width="400" height="400"></canvas>
+
+                <div class="pointer"></div>
+
+            </div>
+
+            <button class="spin-btn" id="spinButton">🌀 SPIN ME</button>
+
+            <div style="margin-top: 0.5rem; color: #32281b; font-weight: 600;">⬅️ wheel or button</div>
+
+        </div>
+
+
+
+        <!-- right side: full recipe -->
+
+        <div class="recipe-panel" id="recipePanel">
+
+            <div class="recipe-header" id="recipeName">Sushi</div>
+
+            <div class="meta-badge">
+
+                <span class="country-meta" id="recipeCountry">日本 · Japan</span>
+
+                <span class="meal-meta" id="recipeMeal">lunch</span>
+
+            </div>
+
+            <div class="ingredients-box" id="recipeIngredients">
+
+                <strong>🧾 ingredients:</strong> sushi rice, nori, fresh salmon/tuna, cucumber, wasabi, soy sauce, rice vinegar
+
+            </div>
+
+            <div class="instructions-box" id="recipeInstructions">
+
+                <strong>📘 how to make:</strong> Cook sushi rice with vinegar. Slice fish. Place nori on mat, spread rice, add fillings, roll tightly. Slice and serve with soy sauce.
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- legend -->
+
+    <div class="legend">
+
+        <span><span class="color-dot" style="background:#b13b3b;"></span> Japan</span>
+
+        <span><span class="color-dot" style="background:#e58b2c;"></span> India</span>
+
+        <span><span class="color-dot" style="background:#2a7a2a;"></span> Mexico</span>
+
+        <span><span class="color-dot" style="background:#cb9e3b;"></span> Italy</span>
+
+        <span>🍱 lunch · 🍲 dinner · 🍰 dessert</span>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+(function() {
+
+    // ---------- 12 FULL RECIPES with INSTRUCTIONS ----------
+
+    const recipes = [
+
+        // japan 0-2
+
+        { country: 'japan', countryDisplay: '日本 · Japan', meal: 'lunch', name: 'Sushi',
+
+          ingredients: 'sushi rice, nori, fresh tuna/salmon, cucumber, avocado, wasabi, soy sauce, pickled ginger',
+
+          instructions: '1. Rinse sushi rice and cook. Mix with rice vinegar, sugar, salt. Cool. 2. Slice fish and veg. 3. Place nori on bamboo mat, spread rice, lay fillings, roll tightly. 4. Slice into pieces. Serve with soy sauce, wasabi, ginger.' },
+
+        { country: 'japan', countryDisplay: '日本 · Japan', meal: 'dinner', name: 'Ramen',
+
+          ingredients: 'fresh ramen noodles, pork belly, soft-boiled egg, nori, bamboo shoots, green onion, soy sauce, miso, chicken broth, sesame oil',
+
+          instructions: '1. Simmer chicken broth with kombu, shiitake for 2h. Add soy sauce and miso. 2. Cook noodles. 3. Pan-sear pork belly slices. 4. Assemble bowl: broth, noodles, pork, egg, nori, bamboo, scallions. Drizzle sesame oil.' },
+
+        { country: 'japan', countryDisplay: '日本 · Japan', meal: 'dessert', name: 'Mochi',
+
+          ingredients: 'glutinous rice flour (mochiko), sugar, water, cornstarch, red bean paste (anko), matcha powder (optional)',
+
+          instructions: '1. Mix mochiko, sugar, water in a bowl. Steam for 20 min. 2. Dust surface with cornstarch, knead dough until smooth. 3. Divide into balls, flatten, place a scoop of anko, seal. Dust with matcha if desired.' },
+
+        // india 3-5
+
+        { country: 'india', countryDisplay: 'भारत · India', meal: 'lunch', name: 'Masala Dosa',
+
+          ingredients: 'parboiled rice, urad dal, fenugreek seeds, potatoes, mustard seeds, curry leaves, turmeric, green chili, onion, salt, oil',
+
+          instructions: '1. Soak rice and dal 6h. Grind to fine batter, ferment overnight. 2. For filling: boil potatoes, mash. Temper mustard, curry leaves, onion, chili, add potatoes, turmeric. 3. Spread batter on hot tawa, crisp, place filling, fold. Serve with chutney.' },
+
+        { country: 'india', countryDisplay: 'भारत · India', meal: 'dinner', name: 'Butter Chicken',
+
+          ingredients: 'chicken thighs, butter, tomato puree, heavy cream, kasuri methi, garam masala, ginger-garlic paste, onion, green cardamom, cumin',
+
+          instructions: '1. Marinate chicken in ginger-garlic, chili powder for 2h. 2. Cook onion, add tomato puree, simmer. 3. In separate pan, cook chicken in butter until browned. 4. Add chicken to gravy, simmer with cream and methi. Finish with butter.' },
+
+        { country: 'india', countryDisplay: 'भारत · India', meal: 'dessert', name: 'Gulab Jamun',
+
+          ingredients: 'khoya (milk solids), paneer, all-purpose flour, baking soda, cardamom, rose water, sugar, water, saffron, pistachios',
+
+          instructions: '1. Mix khoya, flour, cardamom, pinch soda to soft dough. 2. Shape into small balls. 3. Heat ghee/oil, fry on low until golden. 4. Make sugar syrup with water, sugar, cardamom, rose water. Soak fried balls 2h. Garnish nuts.' },
+
+        // mexico 6-8
+
+        { country: 'mexico', countryDisplay: 'México · Mexico', meal: 'lunch', name: 'Tacos al Pastor',
+
+          ingredients: 'pork shoulder, achiote paste, guajillo chilies, pineapple, onion, cilantro, corn tortillas, lime, adobo seasoning',
+
+          instructions: '1. Marinate pork with achiote, chilies, spices overnight. 2. Roast pork with pineapple slices until charred. 3. Dice meat and pineapple. 4. Warm tortillas, fill with pork, pineapple, onion, cilantro. Serve with lime.' },
+
+        { country: 'mexico', countryDisplay: 'México · Mexico', meal: 'dinner', name: 'Mole Poblano',
+
+          ingredients: 'chicken thighs, dried mulato/ancho chilies, sesame seeds, almonds, peanuts, tortilla, onion, garlic, chocolate, cinnamon, cumin',
+
+          instructions: '1. Toast chilies, nuts, seeds. Soak chilies. 2. Blend with tortilla, spices to paste. 3. Brown chicken, remove. 4. Fry paste, add broth, chocolate, simmer. Return chicken, cook 30 min. Serve with rice.' },
+
+        { country: 'mexico', countryDisplay: 'México · Mexico', meal: 'dessert', name: 'Churros',
+
+          ingredients: 'water, flour, butter, sugar, salt, eggs, cinnamon, vegetable oil, dark chocolate, cream',
+
+          instructions: '1. Boil water, butter, salt. Add flour, stir into dough. Cool slightly, beat in eggs. 2. Pipe into hot oil, fry until golden. 3. Roll in cinnamon sugar. 4. Make chocolate sauce: melt chocolate with cream.' },
+
+        // italy 9-11
+
+        { country: 'italy', countryDisplay: 'Italia · Italy', meal: 'lunch', name: 'Margherita Pizza',
+
+          ingredients: '00 flour, yeast, salt, olive oil, San Marzano tomatoes, fresh mozzarella, basil leaves',
+
+          instructions: '1. Make dough: flour, yeast, water, salt, oil. Rise 2h. 2. Stretch to round. 3. Spread crushed tomatoes, torn mozzarella. 4. Bake at 250°C until crust charred. Finish with fresh basil and olive oil.' },
+
+        { country: 'italy', countryDisplay: 'Italia · Italy', meal: 'dinner', name: 'Lasagna',
+
+          ingredients: 'lasagna sheets, ground beef, pork, onion, carrot, celery, tomato passata, red wine, bechamel, parmesan, mozzarella, nutmeg',
+
+          instructions: '1. Make ragu: brown meat, add soffritto, wine, tomato, simmer 2h. 2. Prepare bechamel. 3. Layer: ragu, bechamel, pasta, parmesan. Repeat. Top with mozzarella. 4. Bake 180°C 40 min. Rest before serving.' },
+
+        { country: 'italy', countryDisplay: 'Italia · Italy', meal: 'dessert', name: 'Tiramisù',
+
+          ingredients: 'mascarpone, eggs, sugar, espresso coffee, ladyfingers (savoiardi), cocoa powder, marsala wine (optional)',
+
+          instructions: '1. Separate eggs. Whisk yolks with sugar, add mascarpone. 2. Beat egg whites, fold in. 3. Dip ladyfingers in coffee. 4. Layer mascarpone and ladyfingers. Dust cocoa. Refrigerate 4h.' }
+
+    ];
+
+
+
+    // colors by country
+
+    const countryColor = {
+
+        japan: '#b13b3b',
+
+        india: '#e58b2c',
+
+        mexico: '#2a7a2a',
+
+        italy: '#cb9e3b'
+
+    };
+
+
+
+    const sliceCount = recipes.length; // 12
+
+    const canvas = document.getElementById('wheelCanvas');
+
+    const ctx = canvas.getContext('2d');
+
+
+
+    // recipe panel elements
+
+    const recipeNameEl = document.getElementById('recipeName');
+
+    const recipeCountryEl = document.getElementById('recipeCountry');
+
+    const recipeMealEl = document.getElementById('recipeMeal');
+
+    const recipeIngredientsEl = document.getElementById('recipeIngredients');
+
+    const recipeInstructionsEl = document.getElementById('recipeInstructions');
+
+
+
+    // rotation state
+
+    let currentRotation = 0;
+
+    let spinning = false;
+
+    let spinVelocity = 0;
+
+    let animFrame = null;
+
+
+
+    // ----- draw the wheel -----
+
+    function drawWheel(rotation) {
+
+        const w = canvas.width, h = canvas.height;
+
+        const cx = w/2, cy = h/2;
+
+        const radius = Math.min(w, h) * 0.42;
+
+        const anglePerSlice = (Math.PI * 2) / sliceCount;
+
+
+
+        ctx.clearRect(0, 0, w, h);
+
+
+
+        for (let i = 0; i < sliceCount; i++) {
+
+            const rcp = recipes[i];
+
+            const start = i * anglePerSlice + rotation;
+
+            const end = start + anglePerSlice;
+
+
+
+            ctx.beginPath();
+
+            ctx.moveTo(cx, cy);
+
+            ctx.arc(cx, cy, radius, start, end);
+
+            ctx.closePath();
+
+            ctx.fillStyle = countryColor[rcp.country];
+
+            ctx.fill();
+
+
+
+            ctx.strokeStyle = '#faf0da';
+
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+
+            ctx.moveTo(cx, cy);
+
+            ctx.arc(cx, cy, radius, start, end);
+
+            ctx.lineTo(cx, cy);
+
+            ctx.stroke();
+
+
+
+            // slice icon
+
+            ctx.save();
+
+            ctx.translate(cx, cy);
+
+            ctx.rotate(start + anglePerSlice/2);
+
+            ctx.textAlign = 'center';
+
+            ctx.textBaseline = 'middle';
+
+            ctx.font = 'bold 19px "Segoe UI", "Arial", sans-serif';
+
+            ctx.fillStyle = '#fffbe6';
+
+            ctx.shadowColor = '#1e2a1e';
+
+            ctx.shadowBlur = 7;
+
+            ctx.shadowOffsetX = 1;
+
+            ctx.shadowOffsetY = 1;
+
+
+
+            let mealIcon = rcp.meal === 'lunch' ? '🍱' : (rcp.meal === 'dinner' ? '🍲' : '🍰');
+
+            let countryInitial = rcp.country[0].toUpperCase();
+
+            ctx.fillText(mealIcon + countryInitial, radius * 0.65, 0);
+
+            ctx.restore();
+
+        }
+
+
+
+        // center
+
+        ctx.beginPath();
+
+        ctx.arc(cx, cy, radius * 0.16, 0, 2*Math.PI);
+
+        ctx.fillStyle = '#f0dbb0';
+
+        ctx.shadowBlur = 15;
+
+        ctx.shadowColor = '#3b2d18';
+
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+
+        ctx.strokeStyle = '#a37b40';
+
+        ctx.lineWidth = 5;
+
+        ctx.stroke();
+
+    }
+
+
+
+    // ----- get current slice index (pointer at -PI/2) -----
+
+    function getCurrentIndex(rotation) {
+
+        const pointerAngle = -Math.PI / 2;
+
+        let raw = pointerAngle - rotation;
+
+        raw = ((raw % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+
+        const seg = (2*Math.PI) / sliceCount;
+
+        let idx = Math.floor(raw / seg);
+
+        return idx >= sliceCount ? sliceCount-1 : idx;
+
+    }
+
+
+
+    // ----- update recipe panel -----
+
+    function updatePanelFromRotation(rotation) {
+
+        const idx = getCurrentIndex(rotation);
+
+        const r = recipes[idx];
+
+        recipeNameEl.innerText = r.name;
+
+        recipeCountryEl.innerText = r.countryDisplay;
+
+        recipeMealEl.innerText = r.meal;
+
+        recipeIngredientsEl.innerHTML = `<strong>🧾 ingredients:</strong> ${r.ingredients}`;
+
+        recipeInstructionsEl.innerHTML = `<strong>📘 how to make:</strong> ${r.instructions}`;
+
+    }
+
+
+
+    // ----- spin animation -----
+
+    function spinAnimation() {
+
+        if (!spinning) return;
+
+        spinVelocity *= 0.982; // friction
+
+        currentRotation += spinVelocity;
+
+        currentRotation = currentRotation % (2*Math.PI);
+
+        drawWheel(currentRotation);
+
+        updatePanelFromRotation(currentRotation);
+
+        if (Math.abs(spinVelocity) > 0.0015) {
+
+            animFrame = requestAnimationFrame(spinAnimation);
+
+        } else {
+
+            spinning = false;
+
+            spinVelocity = 0;
+
+            animFrame = null;
+
+        }
+
+    }
+
+
+
+    function startSpin() {
+
+        if (spinning) {
+
+            // add extra push
+
+            spinVelocity += (Math.random() * 0.5 + 0.3) * (Math.random() < 0.5 ? 1 : -1);
+
+            if (Math.abs(spinVelocity) > 1.0) spinVelocity = Math.sign(spinVelocity) * 0.95;
+
+            return;
+
+        }
+
+        spinning = true;
+
+        const base = Math.random() * 0.6 + 0.3;
+
+        const dir = Math.random() < 0.5 ? 1 : -1;
+
+        spinVelocity = base * dir;
+
+        if (animFrame) cancelAnimationFrame(animFrame);
+
+        animFrame = requestAnimationFrame(spinAnimation);
+
+    }
+
+
+
+    // set initial so index 0 (sushi) points up
+
+    function initWheel() {
+
+        const anglePer = (2*Math.PI)/sliceCount;
+
+        currentRotation = -Math.PI/2 - anglePer/2;
+
+        drawWheel(currentRotation);
+
+        updatePanelFromRotation(currentRotation);
+
+    }
+
+    initWheel();
+
+
+
+    document.getElementById('spinButton').addEventListener('click', startSpin);
+
+    canvas.addEventListener('click', startSpin);
+
+
+
+    window.addEventListener('resize', () => drawWheel(currentRotation));
+
+})();
+
+</script>
+
+</body>
+
+</html>
